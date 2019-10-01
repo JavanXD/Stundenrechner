@@ -40,108 +40,151 @@
 
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Stundenrechner</title>
-		<script type="text/javascript">
-		/* Quelle: https://www.zeiterfassungonline.com/stunden-rechner.html */
-			function parseTime(timeStr) {
-			  var timeArr = new Array;
-			
-			  var time = timeStr.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/i);
-			  if (!time) {
-			      return NaN;
-			  }
-			  
-			  timeArr[0] = parseInt(time[1], 10);
-			  timeArr[1] = parseInt(time[2], 10) || 0;
-			  timeArr[2] = timeArr[0]*60 + timeArr[1];
-			  
-			  return timeArr;
-			}
-			
-			function runde(x, n) {
-			  if (n < 1 || n > 14) return false;
-			  var e = Math.pow(10, n);
-			  var k = (Math.round(x * e) / e).toString();
-			  if (k.indexOf('.') == -1) k += '.';
-			  k += e.toString().substring(1);
-			  return k.substring(0, k.indexOf('.') + n+1);
-			} 
-			
-			
-			function minutesToStr(minutes) {
-			  hoursStr = parseInt(minutes / 60);
-			  minutesStr = minutes - (60 * hoursStr);
-			  
-			  hoursStr = hoursStr.toString();
-			  minutesStr = minutesStr.toString();
-			  
-			  if(minutesStr.length < 2)
-			    minutesStr = "0" + minutesStr;
-			
-			  return hoursStr + ':' + minutesStr;
-			}
-			
-			function myzeit() {
-			  var von, bis, pause;
-			  von = parseTime(document.getElementById('time-1').value);
-			  bis = parseTime(document.getElementById('time-2').value);
-			  pause = parseTime(document.getElementById('time-3').value);
-			
-			  if((!Array.isArray(von)) || (!Array.isArray(bis)) || (document.getElementById('time-3').value != '' && (!Array.isArray(pause)))) {
-			    out = '<h3>Fehleingabe</h3>';
-			    if(!Array.isArray(von)) out += '<span style="color: red;">Format von Feld \'von\' falsch</span><br />';
-			    if(!Array.isArray(bis)) out += '<span style="color: red;">Format von Feld \'bis\' falsch</span><br />';
-			    if( document.getElementById('time-3').value != '' && (!Array.isArray(pause)) ) out += '<span style="color: red;">Format von Feld \'pause\' falsch</span><br />';
-			    document.getElementById('ergebnis').innerHTML = out;
-			    return;
-			  }
-			  
-			  else {
-			    if(!Array.isArray(pause)) {
-			      var pause = new Array;
-			      pause[2] = 0;
-			    }
-			
-			    if(bis[2] < von[2])
-			      bis[2] = bis[2] + 60*24;
-			    
-			    brutto = bis[2] - von[2];
-			    netto = brutto - pause[2];
-			  
-			    if(netto < 0) {
-			      out = '<h3>Achtung</h3>';
-			      out += '<span style="color: red;">Pause l&auml;nger als bemessenes Zeitintervall</span><br />';
-			    }
-			    
-			    else {
-			      _brutto = minutesToStr(brutto);
-			      __brutto = runde(brutto / 60, 2);
-			      
-			      _netto = minutesToStr(netto);
-			      __netto = runde(netto / 60, 2);
-			      
-			      out = '<h3>Berechnungsergebnis</h3>';
-			      
-			      if(pause[2] > 0)
-			        out += '<strong>Dauer netto (abz&uuml;glich der Pause)</strong><br />';
-			
-			      else
-			        out += '<strong>Dauer</strong><br />';
-			      
-			      out += '<span style="color: green;">' + _netto + ' Stunden:Minuten</span><br />';
-			      out += '<span style="color: green;"><strong>' + __netto + ' Stunden (dezimal)</strong></span><br /><br />';
-			
-			      if(pause[2] > 0) {
-			        out += '<strong>Dauer brutto (ohne Abzug der Pause)</strong><br />';
-			        out += '<span style="color: green;">' + _brutto + ' Stunden:Minuten</span><br />';
-			        out += '<span style="color: green;">' + __brutto + ' Stunden (dezimal)</span><br />';
-			      }
-			    }
-			    
-			    document.getElementById('ergebnis').innerHTML = out;
-			    return;
-			  }
-			}
-		</script>
+    <script type="text/javascript">
+        /**
+        * Gibt den Cookiewert zurück.
+        *
+        * @param {string} cname - Name der Cookie.
+        */
+        function getCookie(cname) {
+           var name = cname + "=";
+           var decodedCookie = decodeURIComponent(document.cookie);
+           var ca = decodedCookie.split(';');
+           for(var i = 0; i <ca.length; i++) {
+               var c = ca[i];
+               while (c.charAt(0) == ' ') {
+                   c = c.substring(1);
+               }
+               if (c.indexOf(name) == 0) {
+                   return c.substring(name.length, c.length);
+               }
+           }
+           return "";
+        }
+
+        /**
+        * Setzen einer Cookie.
+        *
+        * @param {string} cname - Name der Cookie.
+        * @param {string} cvalue - Wert der Cookie.
+        * @param {string} exdays - Dauer der Cookie.
+        */
+        function setCookie(cname, cvalue, exdays) {
+           var d = new Date();
+           d.setTime(d.getTime() + (exdays*24*60*60*1000));
+           var expires = "expires="+ d.toUTCString();
+           document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+    </script>
+	<script type="text/javascript">
+
+		/* Source: https://www.zeiterfassungonline.com/stunden-rechner.html */
+		function parseTime(timeStr) {
+		  var timeArr = new Array;
+
+		  var time = timeStr.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/i);
+		  if (!time) {
+		      return NaN;
+		  }
+
+		  timeArr[0] = parseInt(time[1], 10);
+		  timeArr[1] = parseInt(time[2], 10) || 0;
+		  timeArr[2] = timeArr[0]*60 + timeArr[1];
+
+		  return timeArr;
+		}
+
+		function runde(x, n) {
+		  if (n < 1 || n > 14) return false;
+		  var e = Math.pow(10, n);
+		  var k = (Math.round(x * e) / e).toString();
+		  if (k.indexOf('.') == -1) k += '.';
+		  k += e.toString().substring(1);
+		  return k.substring(0, k.indexOf('.') + n+1);
+		}
+
+
+		function minutesToStr(minutes) {
+		  hoursStr = parseInt(minutes / 60);
+		  minutesStr = minutes - (60 * hoursStr);
+
+		  hoursStr = hoursStr.toString();
+		  minutesStr = minutesStr.toString();
+
+		  if(minutesStr.length < 2) {
+		    minutesStr = "0" + minutesStr;
+          }
+
+		  return hoursStr + ':' + minutesStr;
+		}
+
+		function calcWorkingHours() {
+		  var von, bis, pause;
+		  von = document.getElementById('time-1').value;
+		  bis = document.getElementById('time-2').value;
+		  pause = document.getElementById('time-3').value;
+
+          setCookie("von", von, 365);
+          setCookie("bis", bis, 365);
+          setCookie("pause", pause, 365);
+
+          von = parseTime(von);
+          bis = parseTime(bis);
+          pause = parseTime(pause);
+
+		  if((!Array.isArray(von)) || (!Array.isArray(bis)) || (document.getElementById('time-3').value != '' && (!Array.isArray(pause)))) {
+		    out = '<h3>Fehleingabe</h3>';
+		    if(!Array.isArray(von)) out += '<span style="color: red;">Format von Feld \'von\' falsch</span><br />';
+		    if(!Array.isArray(bis)) out += '<span style="color: red;">Format von Feld \'bis\' falsch</span><br />';
+		    if( document.getElementById('time-3').value != '' && (!Array.isArray(pause)) ) out += '<span style="color: red;">Format von Feld \'pause\' falsch</span><br />';
+		    document.getElementById('ergebnis').innerHTML = out;
+		    return;
+		  } else {
+		    if(!Array.isArray(pause)) {
+		      var pause = new Array;
+		      pause[2] = 0;
+		    }
+
+		    if(bis[2] < von[2]) {
+		      bis[2] = bis[2] + 60*24;
+            }
+
+		    brutto = bis[2] - von[2];
+		    netto = brutto - pause[2];
+
+		    if(netto < 0) {
+		      out = '<h3>Achtung</h3>';
+		      out += '<span style="color: red;">Pause l&auml;nger als bemessenes Zeitintervall</span><br />';
+		    } else {
+                _brutto = minutesToStr(brutto);
+                __brutto = runde(brutto / 60, 2);
+
+                _netto = minutesToStr(netto);
+                __netto = runde(netto / 60, 2);
+
+                out = '<h3>Berechnungsergebnis</h3>';
+
+                if(pause[2] > 0) {
+                    out += '<strong>Dauer netto (abz&uuml;glich der Pause)</strong><br />';
+                } else {
+                    out += '<strong>Dauer</strong><br />';
+                }
+
+                out += '<span style="color: green;">' + _netto + ' Stunden:Minuten</span><br />';
+                out += '<span style="color: green;"><strong>' + __netto + ' Stunden (dezimal)</strong></span><br /><br />';
+
+		      if(pause[2] > 0) {
+		        out += '<strong>Dauer brutto (ohne Abzug der Pause)</strong><br />';
+		        out += '<span style="color: green;">' + _brutto + ' Stunden:Minuten</span><br />';
+		        out += '<span style="color: green;">' + __brutto + ' Stunden (dezimal)</span><br />';
+		      }
+		    }
+
+		    document.getElementById('ergebnis').innerHTML = out;
+		    return;
+		  }
+		}
+	</script>
 </head>
 <body>
     <div class="app">
@@ -150,26 +193,40 @@
 				<div class="ui-field-contain">
 					<label for="time-1">von</label>
 					<input data-clear-btn="true" name="time-1" id="time-1" value="08:00" type="time">
-				</div>
+				</div><br>
 				<div class="ui-field-contain">
 					<label for="time-2">bis</label>
 					<input data-clear-btn="true" name="time-2" id="time-2" value="17:00" type="time">
-				</div>
+				</div><br>
 				<div class="ui-field-contain">
 					<label for="time-3">Pause</label>
 					<input data-clear-btn="true" name="time-3" id="time-3" value="00:30" type="time">
 				</div>
 			</form>
-			
-			<button type="button" id="Berechnen" onclick="myzeit(); return true;" class="ui-btn ui-corner-all ui-shadow">Berechnen</button>
+            <br>
+			<button type="button" id="Berechnen" onclick="calcWorkingHours(); return true;" class="ui-btn ui-corner-all ui-shadow">Berechnen</button>
 
-			
 			<p id="ergebnis"></p>
-
     </div>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript">
         app.initialize();
+    </script>
+    <script type="text/javascript">
+        function initValues() {
+            if (getCookie("von")) {
+                document.getElementById('time-1').value = getCookie("von");
+            }
+            if (getCookie("bis")) {
+                document.getElementById('time-2').value = getCookie("bis");
+            }
+            if (getCookie("pause")) {
+                document.getElementById('time-3').value = getCookie("pause");
+            }
+        }
+        window.onload = function() {
+          initValues();
+        }
     </script>
 </body>
 
