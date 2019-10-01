@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.phonegap.stundenrechner" version="1.0.1">
   <name>Stundenrechner</name>
-  <description>Arbeitszeiterfassung für die Arbeit. Stundenrechner zählt die Stunden abzüglich der Pause.</description>
+  <description>Stundenberechnung für die Arbeit. Der Stundenrechner berechnet die gearbeiteten Stunden abzüglich der Pause.</description>
   <author href="https://javan.de" email="apps@javan.de">Javan Rasokat</author>
   <content src="index.html"/>
 

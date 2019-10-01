@@ -41,39 +41,11 @@
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Stundenrechner</title>
     <script type="text/javascript">
-        /**
-        * Gibt den Cookiewert zurück.
-        *
-        * @param {string} cname - Name der Cookie.
-        */
-        function getCookie(cname) {
-           var name = cname + "=";
-           var decodedCookie = decodeURIComponent(document.cookie);
-           var ca = decodedCookie.split(';');
-           for(var i = 0; i <ca.length; i++) {
-               var c = ca[i];
-               while (c.charAt(0) == ' ') {
-                   c = c.substring(1);
-               }
-               if (c.indexOf(name) == 0) {
-                   return c.substring(name.length, c.length);
-               }
-           }
-           return "";
+        function getValue(cname) {
+           return window.localStorage.getItem(cname);
         }
-
-        /**
-        * Setzen einer Cookie.
-        *
-        * @param {string} cname - Name der Cookie.
-        * @param {string} cvalue - Wert der Cookie.
-        * @param {string} exdays - Dauer der Cookie.
-        */
-        function setCookie(cname, cvalue, exdays) {
-           var d = new Date();
-           d.setTime(d.getTime() + (exdays*24*60*60*1000));
-           var expires = "expires="+ d.toUTCString();
-           document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        function setValue(cname, cvalue) {
+           window.localStorage.setItem(cname, cvalue);
         }
     </script>
 	<script type="text/javascript">
@@ -124,9 +96,9 @@
 		  bis = document.getElementById('time-2').value;
 		  pause = document.getElementById('time-3').value;
 
-          setCookie("von", von, 365);
-          setCookie("bis", bis, 365);
-          setCookie("pause", pause, 365);
+          setValue("von", von);
+          setValue("bis", bis);
+          setValue("pause", pause);
 
           von = parseTime(von);
           bis = parseTime(bis);
@@ -214,14 +186,14 @@
     </script>
     <script type="text/javascript">
         function initValues() {
-            if (getCookie("von")) {
-                document.getElementById('time-1').value = getCookie("von");
+            if (getValue("von")) {
+                document.getElementById('time-1').value = getValue("von");
             }
-            if (getCookie("bis")) {
-                document.getElementById('time-2').value = getCookie("bis");
+            if (getValue("bis")) {
+                document.getElementById('time-2').value = getValue("bis");
             }
-            if (getCookie("pause")) {
-                document.getElementById('time-3').value = getCookie("pause");
+            if (getValue("pause")) {
+                document.getElementById('time-3').value = getValue("pause");
             }
         }
         window.onload = function() {
